@@ -1,0 +1,22 @@
+[package]
+name = "ejs"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+yew = { version = "0.21.0", default-features = false, features = ["csr"] }
+yew-router = { version = "0.18.0", default-features = false }
+web-sys = { version = "0.3.69", default-features = false, features = ["HtmlInputElement", "MediaQueryList"] }
+gloo-storage = { version = "0.3.0", default-features = false }
+strum = { version = "0.26.2", default-features = false, features = ["derive"] }
+wasm-logger = { version = "0.2.0", default-features = false }
+log = { version = "0.4.21", default-features = false }
+
+
+[profile.release]
+opt-level = "s"
+codegen-units = 1
+panic = "abort"
+strip = true
+lto = true
