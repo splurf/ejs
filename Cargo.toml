@@ -1,6 +1,6 @@
 [package]
 name = "ejs"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 
 
@@ -16,8 +16,8 @@ log = { version = "0.4.21", default-features = false }
 
 
 [profile.release]
-opt-level = "s"
+opt-level = "z"
 codegen-units = 1
 panic = "abort"
-strip = true
+#strip = true  # this breaks WASM code
 lto = true
