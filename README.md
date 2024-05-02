@@ -4,7 +4,7 @@
 ```bash
 trunk build --release
 wasm-opt --strip-debug dist/*.wasm -o dist/*.wasm
-wasm-opt dist/*.wasm -Oz -o dist/*.wasm
+wasm-opt dist/*.wasm -Os -o dist/*.wasm
 ```
 
 ## Todo
