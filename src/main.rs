@@ -194,6 +194,20 @@ fn app() -> Html {
                 .theme-toggler:hover {
                     background-color: var(--navbar-button-hover-background-color);
                 }
+
+                .resume {
+                    width: 48vw;
+                    height: 90vh;
+                    margin: 0 auto;
+                    margin-top: 6vh;
+                    padding: 0.8vh;
+                    text-align: center;
+                    border: var(--border);
+                    border-radius: var(--border-radius);
+                    background-color: var(--content-background-color);
+                    color: var(--text-color);
+                }
+
             "#)}/>
             <NavItems/>
             <AccountLinks/>
