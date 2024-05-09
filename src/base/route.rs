@@ -1,15 +1,21 @@
 use strum::{AsRefStr, EnumCount, EnumIter};
-use stylist::{css, yew::use_style, StyleSource};
-use yew::{function_component, html, Html};
+use stylist::{css, yew::use_style};
+use yew::{function_component, html, Html, ToHtml};
 use yew_router::{components::Redirect, hooks::use_route, Routable};
+
+const ABOUT: &str = include_str!("../../assets/about.md");
+const PROJECTS: &[&str] = &[
+    include_str!("../../assets/projects/donut.live.md"),
+    include_str!("../../assets/projects/fpsdbg.md"),
+];
 
 #[derive(Clone, Debug, Routable, PartialEq, AsRefStr, EnumIter, EnumCount)]
 pub enum Route {
     #[at("/about")]
     About,
 
-    #[at("/projects")]
-    Projects,
+    #[at("/projects/:id")]
+    Projects { id: usize },
 
     #[at("/resume")]
     Resume,
@@ -19,66 +25,51 @@ pub enum Route {
     NotFound,
 }
 
-impl Route {
-    #![allow(non_upper_case_globals)]
-    pub fn use_style(&self) -> StyleSource {
+impl ToHtml for Route {
+    fn to_html(&self) -> Html {
         match self {
-            Self::About | Self::Projects => css!(
-                width: 40vw;
-                margin: 0 auto;
-                margin-top: 20vh;
-                padding: 1vw;
-                text-align: center;
-                border: var(--border);
-                border-radius: var(--border-radius);
-                background-color: var(--content-background-color);
-                color: var(--text-color);
-            ),
-            Self::Resume => css!(
-                    width: 48vw;
-                    height: 90vh;
-                    margin: 0 auto;
-                    margin-top: 6vh;
-                    padding: 0.8vh;
-                    text-align: center;
-                    border: var(--border);
-                    border-radius: var(--border-radius);
-                    background-color: var(--content-background-color);
-                    color: var(--text-color);
-            ),
-            _ => css!(),
-        }
-    }
-
-    pub const fn content(&self) -> &'static str {
-        match self {
-            Self::About => "hey Joel :))",
-            Self::Projects => "not sure where I wanna keep the text. it's either I store everything in the WASM binary or somewhere \
-                               else and just shoot a request to it everytime. if I stored it somewhere else, I wouldn't have to to \
-                               rebuild this everytime then which would be nice",
-            _ => unreachable!()
+            Self::About => {
+                html! { Html::from_html_unchecked(ABOUT.into()) }
+            }
+            Self::Projects { id } => {
+                let choice = PROJECTS.get(*id).unwrap_or(&"Project doesn't exist.");
+                html! { Html::from_html_unchecked((*choice).into()) }
+            }
+            Self::Resume => {
+                html! { <embed src="https://resume.rustychads.com/" width="100%" height="100%"/> }
+            }
+            Self::NotFound => html! { <Redirect<Route> to={Route::About}/> },
         }
     }
 }
 
 #[function_component(Switch)]
 pub fn switch() -> Html {
-    let route = if let Some(route) = use_route::<Route>() {
-        route
-    } else {
-        return Html::default();
-    };
-
-    let style = use_style(route.use_style());
-
-    match route {
-        Route::About | Route::Projects => html! { <div class={style}>{ route.content() }</div> },
-
-        Route::Resume => html! {
-            <div class={style}>
-                <embed src="https://resume.rustychads.com/" width="100%" height="100%"/>
-            </div>
-        },
-        Route::NotFound => html! { <Redirect<Route> to={Route::About}/> },
-    }
+    let route = use_route::<Route>().unwrap_or_default();
+    let style = use_style(match route {
+        Route::About | Route::Projects { .. } => css!(
+            width: 40vw;
+            margin: 0 auto;
+            margin-top: 20vh;
+            padding: 1vw;
+            border: var(--border);
+            border-radius: var(--border-radius);
+            background-color: var(--content-background-color);
+            color: var(--text-color);
+        ),
+        Route::Resume => css!(
+            width: 48vw;
+            height: 90vh;
+            margin: 0 auto;
+            margin-top: 6vh;
+            padding: 0.8vh;
+            text-align: center;
+            border: var(--border);
+            border-radius: var(--border-radius);
+            background-color: var(--content-background-color);
+            color: var(--text-color);
+        ),
+        _ => css!(),
+    });
+    html! { <div class={style}> { route.to_html() }</div> }
 }

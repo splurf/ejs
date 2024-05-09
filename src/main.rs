@@ -10,57 +10,6 @@ use web_sys::window;
 use yew::{function_component, html, Html};
 use yew_router::{hooks::use_navigator, BrowserRouter};
 
-#[function_component(NavItems)]
-fn nav_bar() -> Html {
-    // navigator hook
-    let nav = use_navigator().unwrap();
-
-    let style = use_style!(
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        top: 20vh;
-        left: 0;
-        bottom: 20vh;
-        position: fixed;
-        width: 7vw;
-        height: 42vh;
-        border: var(--border);
-        border-radius: var(--border-radius);
-        background-color: var(--navbar-background-color);
-        opacity: 0.7;
-
-        button {
-            width: 6.5vw;
-            height: 4vh;
-            margin-top: 1.4vh;
-            border: var(--border);
-            border-radius: var(--border-radius);
-            background-color: var(--navbar-button-background-color);
-            color: var(--text-color);
-        }
-
-        &button:hover {
-            background-color: var(--navbar-button-hover-background-color);
-        }
-    );
-
-    // convert each route enum (other than NotFound) into an interactive button
-    html! {
-        <div class={style}>{
-                Route::iter()
-            .take(Route::COUNT - 1)
-            .map(|route| {
-                let nav = nav.clone();
-                let route_clone = route.clone();
-                let onclick = move |_| nav.push(&route_clone);
-                html! { <button {onclick}> { route.as_ref() } </button> }
-            })
-            .collect::<Html>()
-        }</div>
-    }
-}
-
 #[function_component(AccountLinks)]
 fn account_links() -> Html {
     let style = use_style!(
@@ -124,6 +73,57 @@ fn theme_toggler() -> Html {
     html! { <button class={style} {onclick}>{"Theme"}</button> }
 }
 
+#[function_component(NavItems)]
+fn nav_bar() -> Html {
+    // navigator hook
+    let nav = use_navigator().unwrap();
+
+    let style = use_style!(
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        top: 20vh;
+        left: 0;
+        bottom: 20vh;
+        position: fixed;
+        width: 7vw;
+        height: 42vh;
+        border: var(--border);
+        border-radius: var(--border-radius);
+        background-color: var(--navbar-background-color);
+        opacity: 0.7;
+
+        button {
+            width: 6.5vw;
+            height: 4vh;
+            margin-top: 1.4vh;
+            border: var(--border);
+            border-radius: var(--border-radius);
+            background-color: var(--navbar-button-background-color);
+            color: var(--text-color);
+        }
+
+        &button:hover {
+            background-color: var(--navbar-button-hover-background-color);
+        }
+    );
+
+    // convert each route enum (other than NotFound) into an interactive button
+    html! {
+        <div class={style}>{
+                Route::iter()
+            .take(Route::COUNT - 1)
+            .map(|route| {
+                let nav = nav.clone();
+                let route_clone = route.clone();
+                let onclick = move |_| nav.push(&route_clone);
+                html! { <button {onclick}> { route.as_ref() } </button> }
+            })
+            .collect::<Html>()
+        }</div>
+    }
+}
+
 #[function_component(App)]
 fn app() -> Html {
     html! {
@@ -171,9 +171,9 @@ fn app() -> Html {
                 }
             )}/>
             <Switch/>
-            <NavItems/>
             <AccountLinks/>
             <ThemeToggler/>
+            <NavItems/>
         </BrowserRouter>
     }
 }
